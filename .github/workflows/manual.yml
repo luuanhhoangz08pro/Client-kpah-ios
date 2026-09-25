@@ -2,6 +2,9 @@ name: Build iOS IPA
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - ci/ipa-9f06642
 
 permissions:
   contents: read
@@ -15,7 +18,13 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v7
         with:
+          ref: 9f06642290a4fcd19ee700ee0ef4d67101d7434f
           persist-credentials: false
+
+      - name: Verify source commit
+        run: |
+          test "$(git rev-parse HEAD)" = "9f06642290a4fcd19ee700ee0ef4d67101d7434f"
+          git log -1 --format='%H %s'
 
       - name: Setup Java 21
         uses: actions/setup-java@v6
@@ -42,7 +51,7 @@ jobs:
       - name: Upload IPA
         uses: actions/upload-artifact@v7
         with:
-          name: KPAH-iOS-unsigned
+          name: KPAH-iOS-9f06642-unsigned
           path: ios/build/robovm/**/*.ipa
           if-no-files-found: error
           retention-days: 7
